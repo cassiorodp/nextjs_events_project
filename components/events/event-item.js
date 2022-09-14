@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Button from '../ui/button';
 
 import classes from './event-item.module.css';
 
@@ -27,9 +28,9 @@ function EventItem(props) {
             <address>{formattedAddress}</address>
           </div>
         </div>
-      </div>
-      <div className={classes.actions}>
-        <Link href={exploreLink}>Explore Event</Link>
+        <div className={classes.actions}>
+          <Button link={exploreLink}>Explore Event</Button>
+        </div>
       </div>
     </li>
   );
