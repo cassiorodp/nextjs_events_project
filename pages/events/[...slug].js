@@ -47,15 +47,30 @@ function FilteredEventsPage(props) {
     setLoading(false);
   }, [data]);
 
-  if (!events.length || loading) {
-    return <p className="center">Loading</p>;
-  }
-
   const filteredYear = filterData[0];
   const filteredMonth = filterData[1];
 
   const numYear = +filteredYear;
   const numMonth = +filteredMonth;
+
+  const pageHeadData = (
+    <Head>
+      <title>Fitlered Events</title>
+      <meta
+        name="description"
+        content={`All event for ${numMonth}/${numYear}.`}
+      />
+    </Head>
+  );
+
+  if (!events.length || loading) {
+    return (
+      <>
+        {pageHeadData}
+        <p className="center">Loading</p>
+      </>
+    );
+  }
 
   if (
     isNaN(numYear) ||
@@ -68,6 +83,7 @@ function FilteredEventsPage(props) {
   ) {
     return (
       <>
+        {pageHeadData}
         <ErrorAlert>
           <p>Invalid filter. Please ajust your values!</p>
         </ErrorAlert>
@@ -90,6 +106,7 @@ function FilteredEventsPage(props) {
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
       <>
+        {pageHeadData}
         <ErrorAlert>
           <p>No events found for the chosen filter!</p>
         </ErrorAlert>
@@ -104,13 +121,7 @@ function FilteredEventsPage(props) {
 
   return (
     <>
-      <Head>
-        <title>Fitlered Events</title>
-        <meta
-          name="description"
-          content={`All event for ${numMonth}/${numYear}.`}
-        />
-      </Head>
+      {pageHeadData}
       <ResultsTitle date={date} />
       <EventList item={filteredEvents} />
     </>
