@@ -9,7 +9,14 @@ async function handler(req, res) {
       return;
     }
 
-    const client = await getMongoClient();
+    let client;
+
+    try {
+      client = await getMongoClient();
+    } catch (error) {
+      res.status(500).json({ message: 'Connecting to the database failed!' });
+      return;
+    }
 
     const db = client.db('events');
 
