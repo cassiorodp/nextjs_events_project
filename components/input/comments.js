@@ -10,7 +10,6 @@ function Comments(props) {
 
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
-  console.log('🚀 ~ file: comments.js:13 ~ Comments ~ comments', comments);
 
   useEffect(() => {
     if (showComments) {
