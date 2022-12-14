@@ -1,4 +1,4 @@
-import getMongoClient from '../../helpers/mongo-connection';
+import getMongoClient, { insertDocument } from '../../helpers/mongo-connection';
 
 async function handler(req, res) {
   if (req.method === 'POST') {
@@ -18,11 +18,13 @@ async function handler(req, res) {
       return;
     }
 
-    const db = client.db('events');
-
-    await db.collection('newsletter').insertOne({ email });
-
-    client.close();
+    try {
+      await insertDocument(client, 'newsletter', { email });
+      client.close();
+    } catch (error) {
+      res.status(500).json({ message: 'Inserting data failed!' });
+      return;
+    }
 
     res.status(201).json({ message: 'Signed up!' });
   }
