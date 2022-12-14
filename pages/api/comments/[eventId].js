@@ -1,6 +1,9 @@
-function handler(req, res) {
+import getMongoClient from '../../../helpers/mongo-connection';
+
+async function handler(req, res) {
   const { eventId } = req.query;
 
+  const client = await getMongoClient();
   if (req.method === 'POST') {
     const { email, name, text } = req.body;
 
@@ -16,11 +19,17 @@ function handler(req, res) {
     }
 
     const newComment = {
-      id: new Date().toISOString(),
       email,
       name,
       text,
+      eventId,
     };
+
+    const db = client.db('events');
+
+    const result = await db.collection('comments').insertOne(newComment);
+
+    newComment.id = result.insertedId;
 
     res.status(201).json({ message: 'Added comment.', comment: newComment });
   }
@@ -30,6 +39,8 @@ function handler(req, res) {
 
     res.status(200).json({ comments: dummyList });
   }
+
+  client.close();
 }
 
 export default handler;
