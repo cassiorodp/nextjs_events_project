@@ -38,7 +38,7 @@ async function handler(req, res) {
     };
 
     try {
-      await insertDocument(client, 'comments', newComment);
+      const result = await insertDocument(client, 'comments', newComment);
       newComment.id = result.insertedId;
 
       res.status(201).json({ message: 'Added comment.', comment: newComment });
