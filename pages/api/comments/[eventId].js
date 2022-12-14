@@ -1,4 +1,7 @@
-import getMongoClient from '../../../helpers/mongo-connection';
+import getMongoClient, {
+  getAllDocuments,
+  insertDocument,
+} from '../../../helpers/mongo-connection';
 
 async function handler(req, res) {
   const { eventId } = req.query;
@@ -9,6 +12,7 @@ async function handler(req, res) {
     client = await getMongoClient();
   } catch (error) {
     res.status(500).json({ message: 'Connecting to the database failed!' });
+    client.close();
     return;
   }
 
@@ -33,25 +37,30 @@ async function handler(req, res) {
       eventId,
     };
 
-    const db = client.db('events');
+    try {
+      await insertDocument(client, 'comments', newComment);
+      newComment.id = result.insertedId;
 
-    const result = await db.collection('comments').insertOne(newComment);
-
-    newComment.id = result.insertedId;
-
-    res.status(201).json({ message: 'Added comment.', comment: newComment });
+      res.status(201).json({ message: 'Added comment.', comment: newComment });
+    } catch (error) {
+      res.status(500).json({ message: 'Inserting comment failed!' });
+      return;
+    }
   }
 
   if (req.method === 'GET') {
-    const db = client.db('events');
-
-    const documents = await db
-      .collection('comments')
-      .find({ eventId })
-      .sort({ _id: -1 })
-      .toArray();
-
-    res.status(200).json({ comments: documents });
+    try {
+      const documents = await getAllDocuments(
+        client,
+        'comments',
+        { _id: -1 },
+        { eventId }
+      );
+      res.status(200).json({ comments: documents });
+    } catch (error) {
+      res.status(500).json({ message: 'Getting comments failed!' });
+      return;
+    }
   }
 
   client.close();

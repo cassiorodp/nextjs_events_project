@@ -15,6 +15,8 @@ async function handler(req, res) {
       client = await getMongoClient();
     } catch (error) {
       res.status(500).json({ message: 'Connecting to the database failed!' });
+      client.close();
+
       return;
     }
 
