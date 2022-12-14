@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import getMongoClient from '../../helpers/mongo-connection';
 
 async function handler(req, res) {
   if (req.method === 'POST') {
@@ -9,14 +9,11 @@ async function handler(req, res) {
       return;
     }
 
-    const mongoDBPassword = process.env.MONGO_DB_PASSWORD;
+    const client = await getMongoClient();
 
-    const client = await MongoClient.connect(
-      `mongodb+srv://cassiorodp:${mongoDBPassword}@startercluster.0cnvf.mongodb.net/?retryWrites=true&w=majority`
-    );
-    const db = client.db('newsletter');
+    const db = client.db('events');
 
-    await db.collection('emails').insertOne({ email });
+    await db.collection('newsletter').insertOne({ email });
 
     client.close();
 
