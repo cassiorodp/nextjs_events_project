@@ -1,8 +1,10 @@
 import axios from 'axios';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
+import NotificationContext from '../../store/notification-context';
 import classes from './newsletter-registration.module.css';
 
 function NewsletterRegistration() {
+  const notificationCtx = useContext(NotificationContext);
   const inputRef = useRef(null);
 
   async function registrationHandler(event) {
@@ -10,11 +12,28 @@ function NewsletterRegistration() {
 
     const enteredEmail = inputRef.current.value;
 
-    const { data } = await axios.post('/api/newsletter', {
-      email: enteredEmail,
+    notificationCtx.showNotification({
+      title: 'Signing up...',
+      message: 'Registering for newsletter.',
+      status: 'pending',
     });
 
-    console.log(data.message);
+    try {
+      await axios.post('/api/newsletter', {
+        email: enteredEmail,
+      });
+      notificationCtx.showNotification({
+        title: 'Success!',
+        message: 'Successfully registered for newsletter!',
+        status: 'success',
+      });
+    } catch (error) {
+      notificationCtx.showNotification({
+        title: 'Error!',
+        message: error.message || 'Something went wrong!',
+        status: 'error',
+      });
+    }
   }
 
   return (
